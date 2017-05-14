@@ -21,11 +21,7 @@ def makeModel():
     output = Dense(100, activation='relu')(output)
     output = Dense(50, activation='relu')(output)
     output = Dense(20, activation='relu')(output)
-<<<<<<< HEAD
     output = Dense(1, activation='relu', use_bias=False)(output)
-=======
-    output = Dense(1, activation='relu')(output)
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
     print(output)
 
     model = Model(inputs=inputs, outputs=output)
@@ -51,15 +47,9 @@ whowon = []
 def train():
     global model, boardgames, whowon
     makeModel()
-<<<<<<< HEAD
     #print("Boardgames is:", np.array(boardgames).shape, "whowon:", np.array(whowon).shape)
     model.fit(np.array(boardgames), np.array(whowon), epochs=10, validation_split=0.2, shuffle=True,
               verbose=0, callbacks=callbacks)
-=======
-    print("Boardgames is:", np.array(boardgames).shape, "whowon:", np.array(whowon).shape)
-    model.fit(np.array(boardgames), np.array(whowon), epochs=10, validation_split=0.2, shuffle=True,
-              verbose=1, callbacks=callbacks)
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
 
 # board[0,:,:] is for computer player.  0 if there's no piece and 1 if there is
 # board[1,:,:] is for other player.     0 if there's no piece and 1 if there is
@@ -79,11 +69,7 @@ def find_next_best_move(board, player):
                 # Nobody has played in this position.
                 # Let's play and see how good the board looks for us
                 board[0, x, y] = 1
-<<<<<<< HEAD
                 prob_to_win = model.predict(np.array([board]), batch_size=1, verbose=0)[0]
-=======
-                prob_to_win = model.predict(np.array([board]), batch_size=1, verbose=1)[0]
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
                 board[0, x, y] = 0
                 if ((player == 0 and prob_to_win > best_prob_to_win) or
                           (player == 1 and prob_to_win < best_prob_to_win)):
@@ -141,11 +127,7 @@ def playGame():
 
 def playAgainstSelfRandomly():
     while True:
-<<<<<<< HEAD
         player_who_won, board = playAgainstSelfRandomly_()
-=======
-        player_who_won = playAgainstSelfRandomly_()
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
         notify_new_game(player_who_won)
         printBoard(board)
         print("Score:", player_who_won)
@@ -171,7 +153,6 @@ def playAgainstSelfRandomly_():
     player = 0
     while True:
         if has_won(board, 0):
-<<<<<<< HEAD
             return 1, board
         if has_won(board, 1):
             return 0, board
@@ -181,28 +162,14 @@ def playAgainstSelfRandomly_():
             x,y = get_random_move(board)
         else:
             x, y = find_next_best_move(board, player)
-=======
-            return 1
-        if has_won(board, 1):
-            return 0
-        if is_board_full(board):
-            return 0.5
-        #x, y = find_next_best_move(board, player)
-        x,y = get_random_move(board)
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
         board[player, x, y] = 1
         remember_game_board(board)
         if player == 0:
             player = 1
         else:
             player = 0
-<<<<<<< HEAD
         #printBoard(board)
         #print()
-=======
-        printBoard(board)
-        print()
->>>>>>> ec3734d10f51f876fa539325e1ff02c3faf00761
 
 if __name__ == "__main__":
     print("Hello!")
