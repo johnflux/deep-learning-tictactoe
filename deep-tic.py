@@ -106,6 +106,7 @@ def playgame():
 			msgdelay()
 		else:
 			board[player][y][x] = 1
+			remember_game_board(board)
 			player = 0 if player else 1
 
 while True:
