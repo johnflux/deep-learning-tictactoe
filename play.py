@@ -59,17 +59,40 @@ def makeModel():
 boardgames = []
 whowon = []
 
-
-def train(boardgames, whowon):
-    global model
+def train():
+    global model, boardgames, whowon
     makeModel()
-    model.fit(boardgames, whowon, epochs=100, validation_split=0.2, shuffle=True,
+    model.fit(boardgames, whowon, epochs=10, validation_split=0.2, shuffle=True,
               verbose=1, callbacks=[tbCallBack, checkpointCallback, reduce_lr])
 
 # board[0,:,:] is for computer player.  0 if there's no piece and 1 if there is
 # board[1,:,:] is for other player.     0 if there's no piece and 1 if there is
 def find_next_best_move(board):
     global model
+    makeModel()
+    best_prob_to_win = -1
+    best_x = 0
+    best_y = 0
+    for x in range(3):
+        for y in range(3):
+            if not board[0, x, y] and not board[1, x, y]:
+                # Nobody has played in this position.
+                # Let's play and see how good the board looks for us
+                board[0, x, y] = 1
+                prob_to_win = model.predict([board], batch_size=1, verbose=1)[0]
+                board[0, x, y] = 0
+                if prob_to_win > best_prob_to_win:
+                    best_x = x
+                    best_y = y
+                    best_prob_to_win = prob_to_win
+    print("Best move is", best_x, best_y, "with probability to win: ", prob_to_win)
+    return best_x, best_y
+
+def new_data(boardgames_, whowon_):
+    global boardgames, whowon
+    boardgames += boardgames_
+    whowon += whowon_
+    train()
 
 
 
