@@ -8,9 +8,10 @@ from keras.layers import Flatten, Dense, Dropout
 # Take an array of boards, and array of who won - 0 if computer, 1 if human
 
 model = None
+callbacks = []
 
 def makeModel():
-    global model
+    global model, callbacks
     if model != None:
         return
     inputs = keras.layers.Input(shape=(2,3,3))
@@ -35,6 +36,7 @@ def makeModel():
     reduce_lr = keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss', factor=0.2,
         patience=5, min_lr=0.0001)
+    callbacks = [tbCallBack, checkpointCallback, reduce_lr]
 
     model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=0.001))
     from keras.models import load_model
@@ -47,7 +49,7 @@ def train():
     global model, boardgames, whowon
     makeModel()
     model.fit(boardgames, whowon, epochs=10, validation_split=0.2, shuffle=True,
-              verbose=1, callbacks=[tbCallBack, checkpointCallback, reduce_lr])
+              verbose=1, callbacks=callbacks)
 
 # board[0,:,:] is for computer player.  0 if there's no piece and 1 if there is
 # board[1,:,:] is for other player.     0 if there's no piece and 1 if there is
