@@ -1,25 +1,9 @@
 #!/usr/bin/env python3
-import os
-import csv
-import cv2
 import numpy as np
-import sklearn
 import copy
-import random
 import keras
-import tensorflow as tf
-from keras.preprocessing import image
-from keras.models import Model, Sequential
+from keras.models import Model
 from keras.layers import Flatten, Dense, Dropout
-from keras.layers.convolutional import Conv2D
-from keras.layers.core import Lambda
-from sklearn.model_selection import train_test_split
-from skimage import draw
-from functools import lru_cache
-import matplotlib.pyplot as plt
-from helper import *
-
-
 
 # Take an array of boards, and array of who won - 0 if computer, 1 if human
 
