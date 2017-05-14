@@ -4,12 +4,15 @@ import copy
 import keras
 from keras.models import Model
 from keras.layers import Flatten, Dense, Dropout
+from ansi import *
+from os.path import isfile
 
 
 # Call this like:
 
 model = None
 callbacks = []
+weight_file = 'model_running.h5'
 
 def makeModel():
     global model, callbacks
@@ -39,7 +42,8 @@ def makeModel():
 
     model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=0.001))
     from keras.models import load_model
-    #model = load_weights('model_running.h5')
+    if isfile(weight_file):
+        model.load_weights(weight_file)
 
 boardgames = []
 whowon = []
@@ -47,8 +51,8 @@ whowon = []
 def train():
     global model, boardgames, whowon
     makeModel()
-    #print("Boardgames is:", np.array(boardgames).shape, "whowon:", np.array(whowon).shape)
-    model.fit(np.array(boardgames), np.array(whowon), epochs=10, validation_split=0.2, shuffle=True,
+    print("Boardgames is:", np.array(boardgames).shape, "whowon:", np.array(whowon).shape)
+    model.fit(np.array(boardgames), np.array(whowon), epochs=20, validation_split=0.2, shuffle=True,
               verbose=0, callbacks=callbacks)
 
 # board[0,:,:] is for computer player.  0 if there's no piece and 1 if there is
@@ -76,7 +80,7 @@ def find_next_best_move(board, player):
                     best_x = x
                     best_y = y
                     best_prob_to_win = prob_to_win
-    #print("Best move is", best_x, best_y, "with probability to win: ", prob_to_win)
+    print("Best move is", best_x, best_y, "with probability to win: ", prob_to_win)
     return best_x, best_y
 
 def remember_game_board(board):
@@ -84,12 +88,13 @@ def remember_game_board(board):
     current_game_boards.append(board)
 
 # whowon_  should be 1 if computer, 0 if person, 0.5 if tie
-def notify_new_game(whowon_):
+def notify_new_game(whowon_, dotrain=True):
     global boardgames, whowon, current_game_boards
     boardgames += current_game_boards
     whowon += (np.ones(len(current_game_boards)) * whowon_).tolist()
     current_game_boards = []
-    train()
+    if dotrain:
+        train()
 
 def get_valid_moves(board):
     valid_moves = []
@@ -128,7 +133,7 @@ def playGame():
 def playAgainstSelfRandomly():
     while True:
         player_who_won, board = playAgainstSelfRandomly_()
-        notify_new_game(player_who_won)
+        notify_new_game(player_who_won, dotrain=(np.random.random()<.5))
         printBoard(board)
         print("Score:", player_who_won)
         print()
