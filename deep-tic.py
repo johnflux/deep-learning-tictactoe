@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from __future__ import print_function
+#from __future__ import print_function
 #from ansi import *
 import os
 import random, os, argparse, time
@@ -16,7 +16,6 @@ def getargs():
 args = getargs()
 tz=0; tx=-1; to=1; # board values: unset, X, and O
 bdim = 3          # might we expand from 3x3 to connect four ...?
-board=None
 num_players=2     # might we have more than 2?
 computer=0        # index of computer
 human=1           # index of human
@@ -46,18 +45,18 @@ def msgdelay():
 	time.sleep(prompt_delay)
 def prompt_human_move():
 	while True:
-		pfl("Your move (uio jkl m,.):")
-		inp=raw_input('')
+		inp=input("Your move (uio jkl m,.): ")
 		pf("")
-		if keymap.has_key(inp[0]):
+		if inp[0] in keymap:
 			return keymap[inp[0]]      # y,x pair
 		pf("I'm sorry, I don't understand that input. Try again.")
 		msgdelay()
+def new_board():
+	return np.zeros((num_players,bdim,bdim))
 def init():
-	global board, keymap
+	global keymap
 	seed = 1
 	random.seed(seed)
-	board=np.zeros((num_players,bdim,bdim))
 	keymap=dict()
 	keymap['u']=(0,0)
 	keymap['i']=(0,1)
@@ -76,13 +75,27 @@ def available_move(board, y, x):
 	return True
 init()
 def playgame():
-	player=randint(0,1) # initial move is player or computer
+	board = new_board()
+	player = randint(0,1) # initial move is player or computer
 	while True:
 		pf("\n\n================================================")
 		pf(board)
 		pf("\n------------------------------------------------\n")
 		print_board(board)
 		pf("")
+		if has_won(board, human):
+			pf("\nYou won!")
+			msgdelay();
+			break
+		elif has_won(board, computer):
+			pf("\nComputer won!")
+			msgdelay();
+			break
+		elif is_board_full(board):
+			pf("\nThe glass is half empty!  Everybody lost!")
+			msgdelay();
+			break
+
 		if player == human:
 			y,x = prompt_human_move()
 		else:
